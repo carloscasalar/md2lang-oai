@@ -7,6 +7,7 @@ from typing import Optional
 
 import click
 
+from md2lang_oai.chunker import chunk_text_by_paragraphs
 from md2lang_oai.locale import normalize_and_validate_locale
 from md2lang_oai.oai import OpenAIChatCompletionsClient
 from md2lang_oai.protect import protect_markdown, restore_markdown
@@ -15,6 +16,8 @@ from md2lang_oai.protect import protect_markdown, restore_markdown
 DEFAULT_BASE_URL = "https://api.openai.com/v1"
 DEFAULT_MODEL = "gpt-4o-mini"
 DEFAULT_API_KEY_ENV = "OPENAI_API_KEY"
+DEFAULT_MAX_TOKENS = 3000
+DEFAULT_TIMEOUT = 300.0
 
 
 @dataclass(frozen=True)
@@ -66,6 +69,8 @@ def _version() -> str:
 @click.option("--model", default=DEFAULT_MODEL, show_default=True, help="Chat Completions model name.")
 @click.option("--base-url", default=DEFAULT_BASE_URL, show_default=True, help="OpenAI-compatible base URL (e.g. https://api.openai.com/v1).")
 @click.option("--api-key-env", default=DEFAULT_API_KEY_ENV, show_default=True, help="Environment variable name holding the API key.")
+@click.option("--max-tokens", default=DEFAULT_MAX_TOKENS, show_default=True, type=int, help="Max tokens per chunk (splits large inputs to fit model context).")
+@click.option("--timeout", default=DEFAULT_TIMEOUT, show_default=True, type=float, help="HTTP request timeout in seconds.")
 def main(
     to_locale: str,
     input_path: Optional[str],
@@ -73,6 +78,8 @@ def main(
     model: str,
     base_url: str,
     api_key_env: str,
+    max_tokens: int,
+    timeout: float,
 ) -> None:
     """Translate Markdown/text into a target locale (pipe-friendly)."""
 
@@ -84,14 +91,29 @@ def main(
 
     raw = _read_all_input(input_path)
 
-    protected, mapping = protect_markdown(raw)
+    # Chunk input if needed
+    chunks = chunk_text_by_paragraphs(raw, max_tokens=max_tokens)
+    if len(chunks) > 1:
+        click.echo(f"Splitting input into {len(chunks)} chunks...", err=True)
 
-    client = OpenAIChatCompletionsClient(base_url=base_url, api_key=api_key)
-    try:
-        translated = client.translate(text=protected, to_locale=locale, model=model)
-    except Exception as e:
-        raise click.ClickException(str(e)) from e
+    client = OpenAIChatCompletionsClient(base_url=base_url, api_key=api_key, timeout_s=timeout)
+    translated_chunks = []
 
-    restored = restore_markdown(translated, mapping)
+    for i, chunk in enumerate(chunks, 1):
+        if len(chunks) > 1:
+            click.echo(f"Translating chunk {i}/{len(chunks)}...", err=True)
 
-    _write_all_output(output_path, restored)
+        protected, mapping = protect_markdown(chunk)
+
+        try:
+            translated = client.translate(text=protected, to_locale=locale, model=model)
+        except Exception as e:
+            raise click.ClickException(str(e)) from e
+
+        restored = restore_markdown(translated, mapping)
+        translated_chunks.append(restored)
+
+    # Reassemble chunks
+    final_output = "\n\n".join(translated_chunks)
+
+    _write_all_output(output_path, final_output)
