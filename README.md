@@ -70,7 +70,7 @@ export OPENAI_API_KEY=test
 uvx md2lang-oai --to es-ES --model openchat:7b --base-url http://localhost:11434/v1 --max-tokens 2000 --timeout 600 --input large-file.md --output large-file-es.md
 ```
 
-# Custom translation instructions
+### Custom translation instructions
 
 You can provide domain-specific instructions to guide the translation process. For instance, when translating a tabletop role-playing adventure, you may want specific acronyms to be translated in a particular way:
 
@@ -93,9 +93,7 @@ uvx md2lang-oai --to es-ES --input dnd_adventure.md --instructions-file dnd_inst
 
 The instructions can be plain text or Markdown and will be appended to the system prompt sent to the model.
 
-##
-
-## Markdown handling
+### Markdown handling
 
 The tool preserves Markdown structure as much as possible:
 
