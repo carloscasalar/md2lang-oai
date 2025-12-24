@@ -5,7 +5,7 @@ Enable large context with (or set max-tokens to 4K):
 ollama create qwen2.5-large -f ./Modelfile
 ```
 
-```
+```bash
 export OPENAI_API_KEY=test
 output="${input%.md}-es.md"
 uv run md2lang-oai --to es-ES \
