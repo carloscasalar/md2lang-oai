@@ -1,6 +1,7 @@
 # The Goblin Cave
 
 ## Character Stats
+
 - STR: 16 (+3)
 - DEX: 14 (+2)
 - CON: 12 (+1)
