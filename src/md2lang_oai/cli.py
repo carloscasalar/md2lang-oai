@@ -51,14 +51,9 @@ def _resolve_api_key(env_name: str) -> str:
 
 
 def _version() -> str:
-    try:
-        from importlib.metadata import version
+    from importlib.metadata import version
 
-        return version("md2lang-oai")
-    except Exception:
-        from md2lang_oai import __version__
-
-        return __version__
+    return version("md2lang-oai")
 
 
 @click.command(context_settings={"help_option_names": ["-h", "--help"]})
