@@ -88,9 +88,16 @@ def main(
 
     custom_instructions = None
     if instructions_file:
-        custom_instructions = _read_all_input(instructions_file)
+        try:
+            custom_instructions = _read_all_input(instructions_file)
+        except (OSError, UnicodeError) as e:
+            raise click.ClickException(f"Failed to read instructions file '{instructions_file}': {e}") from e
 
-    raw = _read_all_input(input_path)
+    try:
+        raw = _read_all_input(input_path)
+    except (OSError, UnicodeError) as e:
+        source = input_path if input_path is not None else "<stdin>"
+        raise click.ClickException(f"Failed to read input from {source}: {e}") from e
 
     # Chunk input if needed
     chunks = chunk_text_by_paragraphs(raw, max_tokens=max_tokens)
