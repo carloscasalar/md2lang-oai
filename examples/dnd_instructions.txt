@@ -1,5 +1,5 @@
 - Regarding acronyms, translate:
-  - STR as FUE 
+  - STR as FUE
   - DEX as DES
   - CON as CON
   - INT as INT
