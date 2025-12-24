@@ -61,6 +61,7 @@ def _version() -> str:
 @click.option("--to", "to_locale", required=True, metavar="LOCALE", help="Target locale: xx or xx-YY (e.g. es or es-ES).")
 @click.option("--input", "input_path", type=click.Path(dir_okay=False, path_type=str), default=None, help="Read input from a file instead of stdin.")
 @click.option("-o", "--output", "output_path", type=click.Path(dir_okay=False, path_type=str), default=None, help="Write output to a file instead of stdout.")
+@click.option("--instructions-file", "instructions_file", type=click.Path(exists=True, dir_okay=False, path_type=str), default=None, help="Path to a file with additional translation instructions.")
 @click.option("--model", default=DEFAULT_MODEL, show_default=True, help="Chat Completions model name.")
 @click.option("--base-url", default=DEFAULT_BASE_URL, show_default=True, help="OpenAI-compatible base URL (e.g. https://api.openai.com/v1).")
 @click.option("--api-key-env", default=DEFAULT_API_KEY_ENV, show_default=True, help="Environment variable name holding the API key.")
@@ -70,6 +71,7 @@ def main(
     to_locale: str,
     input_path: Optional[str],
     output_path: Optional[str],
+    instructions_file: Optional[str],
     model: str,
     base_url: str,
     api_key_env: str,
@@ -83,6 +85,10 @@ def main(
     except ValueError as e:
         raise click.ClickException(str(e)) from e
     api_key = _resolve_api_key(api_key_env)
+
+    custom_instructions = None
+    if instructions_file:
+        custom_instructions = _read_all_input(instructions_file)
 
     raw = _read_all_input(input_path)
 
@@ -101,7 +107,12 @@ def main(
         protected, mapping = protect_markdown(chunk)
 
         try:
-            translated = client.translate(text=protected, to_locale=locale, model=model)
+            translated = client.translate(
+                text=protected,
+                to_locale=locale,
+                model=model,
+                custom_instructions=custom_instructions,
+            )
         except Exception as e:
             raise click.ClickException(str(e)) from e
 

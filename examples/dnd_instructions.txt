@@ -1,0 +1,9 @@
+Regarding D&D acronyms, translate:
+- STR as FUE (Fuerza)
+- DEX as DES (Destreza)
+- CON as CON (Constitución)
+- INT as INT (Inteligencia)
+- WIS as SAB (Sabiduría)
+- CHA as CAR (Carisma)
+
+Keep game mechanics terminology in English when commonly used by the Spanish D&D community, such as "saving throw", "action", "bonus action".

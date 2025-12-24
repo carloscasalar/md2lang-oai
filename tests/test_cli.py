@@ -169,3 +169,106 @@ A [Link Text](https://example.com/path) and ![Alt Text](https://img.example/a.pn
 
         # Ensure placeholders are not leaked
         assert "@@MD2LANG_OAI_" not in out
+
+
+def test_custom_instructions_file(monkeypatch, tmp_path):
+    """Test that custom instructions from file are included in the translation request."""
+    monkeypatch.setenv("OPENAI_API_KEY", "test")
+
+    captured_requests = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured_requests.append(request)
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": "Translated output"}}]},
+        )
+
+    transport = httpx.MockTransport(handler)
+
+    with patch("md2lang_oai.oai.httpx.Client") as mock_client_cls:
+        mock_client_cls.return_value.__enter__.return_value.post.side_effect = (
+            lambda *args, **kwargs: transport.handle_request(
+                httpx.Request(
+                    "POST",
+                    kwargs.get("url") or args[0],
+                    headers=kwargs.get("headers"),
+                    json=kwargs.get("json"),
+                )
+            )
+        )
+
+        in_path = tmp_path / "in.txt"
+        in_path.write_text("Hello world", encoding="utf-8")
+
+        instructions_path = tmp_path / "instructions.txt"
+        instructions_path.write_text(
+            "Regarding acronyms, translate STR as FUE, DEX as DES, CON as CON, WIS as SAB and CHA as CAR",
+            encoding="utf-8",
+        )
+
+        runner = CliRunner()
+        result = runner.invoke(
+            main,
+            [
+                "--to",
+                "es-ES",
+                "--input",
+                str(in_path),
+                "--instructions-file",
+                str(instructions_path),
+            ],
+        )
+        assert result.exit_code == 0, result.output
+        assert len(captured_requests) == 1
+
+        # Verify the custom instructions are in the system message
+        req_body = json.loads(captured_requests[0].content.decode("utf-8"))
+        system_message = req_body["messages"][0]["content"]
+        assert "Additional instructions:" in system_message
+        assert "STR as FUE" in system_message
+        assert "DEX as DES" in system_message
+
+
+def test_translation_without_custom_instructions(monkeypatch, tmp_path):
+    """Test that translation works without custom instructions (backward compatibility)."""
+    monkeypatch.setenv("OPENAI_API_KEY", "test")
+
+    captured_requests = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured_requests.append(request)
+        return httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": "Translated output"}}]},
+        )
+
+    transport = httpx.MockTransport(handler)
+
+    with patch("md2lang_oai.oai.httpx.Client") as mock_client_cls:
+        mock_client_cls.return_value.__enter__.return_value.post.side_effect = (
+            lambda *args, **kwargs: transport.handle_request(
+                httpx.Request(
+                    "POST",
+                    kwargs.get("url") or args[0],
+                    headers=kwargs.get("headers"),
+                    json=kwargs.get("json"),
+                )
+            )
+        )
+
+        in_path = tmp_path / "in.txt"
+        in_path.write_text("Hello world", encoding="utf-8")
+
+        runner = CliRunner()
+        result = runner.invoke(
+            main,
+            ["--to", "es-ES", "--input", str(in_path)],
+        )
+        assert result.exit_code == 0, result.output
+        assert len(captured_requests) == 1
+
+        # Verify there are no additional instructions in the system message
+        req_body = json.loads(captured_requests[0].content.decode("utf-8"))
+        system_message = req_body["messages"][0]["content"]
+        assert "Additional instructions:" not in system_message
