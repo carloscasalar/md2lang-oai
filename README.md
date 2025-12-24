@@ -72,12 +72,12 @@ uvx md2lang-oai --to es-ES --model openchat:7b --base-url http://localhost:11434
 
 # Custom translation instructions
 
-You can provide domain-specific instructions to guide the translation. For example, when translating D&D content, you might want specific acronyms translated in a particular way:
+You can provide domain-specific instructions to guide the translation process. For instance, when translating a tabletop role-playing adventure, you may want specific acronyms to be translated in a particular way:
 
 Create a file `dnd_instructions.txt`:
 
 ```
-Regarding D&D acronyms, translate:
+Regarding acronyms, translate:
 - STR as FUE
 - DEX as DES
 - CON as CON

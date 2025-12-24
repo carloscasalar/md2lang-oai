@@ -1,9 +1,15 @@
-Regarding D&D acronyms, translate:
-- STR as FUE (Fuerza)
-- DEX as DES (Destreza)
-- CON as CON (Constitución)
-- INT as INT (Inteligencia)
-- WIS as SAB (Sabiduría)
-- CHA as CAR (Carisma)
+- Regarding acronyms, translate:
+  - STR as FUE 
+  - DEX as DES
+  - CON as CON
+  - INT as INT
+  - WIS as SAB
+  - CHA as CAR
+  - AC as CA
+  - DC as CD
 
-Keep game mechanics terminology in English when commonly used by the Spanish D&D community, such as "saving throw", "action", "bonus action".
+- Do not translate the names of characters, places, or organizations.
+
+- When describing a scene, unless the context clearly indicates that it is being explained to 
+a single player, translate "you" as "vosotros" instead of "tú" and "yours" as the scene is likely 
+being described to the whole group of players.
