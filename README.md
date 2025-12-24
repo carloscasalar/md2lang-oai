@@ -56,7 +56,7 @@ Example:
 
 ```bash
 export OPENAI_API_KEY="..."
-uv run md2lang-oai --to es-ES --model gpt-4o-mini --base-url https://api.openai.com/v1 < input.md
+uv run md2lang-oai --to es-ES --model gpt-4o-mini < input.md
 ```
 
 ### Large files and context limits
@@ -69,6 +69,7 @@ Example for a local Ollama model with a 4K context:
 export OPENAI_API_KEY=test
 uv run md2lang-oai --to es-ES --model openchat:7b --base-url http://localhost:11434/v1 --max-tokens 2000 --timeout 600 --input large-file.md --output large-file-es.md
 ```
+
 # Custom translation instructions
 
 You can provide domain-specific instructions to guide the translation. For example, when translating D&D content, you might want specific acronyms translated in a particular way:
@@ -77,11 +78,11 @@ Create a file `dnd_instructions.txt`:
 
 ```
 Regarding D&D acronyms, translate:
-- STR as FUE (Fuerza)
-- DEX as DES (Destreza)
-- CON as CON (Constitución)
-- WIS as SAB (Sabiduría)
-- CHA as CAR (Carisma)
+- STR as FUE
+- DEX as DES
+- CON as CON
+- WIS as SAB
+- CHA as CAR
 ```
 
 Then use it:
@@ -93,6 +94,7 @@ uv run md2lang-oai --to es-ES --input dnd_adventure.md --instructions-file dnd_i
 The instructions can be plain text or Markdown and will be appended to the system prompt sent to the model.
 
 ##
+
 ## Markdown handling
 
 The tool preserves Markdown structure as much as possible:
