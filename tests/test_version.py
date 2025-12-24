@@ -1,11 +1,11 @@
-"""Test version consistency between pyproject.toml and CHANGELOG.md."""
+"""Test version consistency between pyproject.toml, CHANGELOG.md, and uv.lock."""
 
 import re
 from pathlib import Path
 
 
 def test_version_matches_changelog():
-    """Verify that pyproject.toml version matches the latest CHANGELOG.md version."""
+    """Verify that pyproject.toml version matches the latest CHANGELOG.md version and uv.lock."""
     root = Path(__file__).parent.parent
 
     # Read version from pyproject.toml
@@ -27,7 +27,23 @@ def test_version_matches_changelog():
         assert len(changelog_versions) >= 2, "CHANGELOG.md should have at least one released version"
         latest_changelog_version = changelog_versions[1]
 
+    # Read version from uv.lock
+    uvlock = (root / "uv.lock").read_text()
+    # Match the md2lang-oai package version in uv.lock
+    lock_match = re.search(
+        r'^\[\[package\]\]\nname\s*=\s*"md2lang-oai"\nversion\s*=\s*"([^"]+)"',
+        uvlock,
+        re.MULTILINE,
+    )
+    assert lock_match, "Could not find md2lang-oai version in uv.lock"
+    lock_version = lock_match.group(1)
+
     assert project_version == latest_changelog_version, (
         f"Version mismatch: pyproject.toml has '{project_version}' "
         f"but CHANGELOG.md has '{latest_changelog_version}'"
+    )
+
+    assert project_version == lock_version, (
+        f"Version mismatch: pyproject.toml has '{project_version}' "
+        f"but uv.lock has '{lock_version}'"
     )
