@@ -14,7 +14,9 @@ class OpenAIChatCompletionsClient:
     timeout_s: float = 60.0
     transport: Optional[httpx.BaseTransport] = None
 
-    def translate(self, *, text: str, to_locale: str, model: str) -> str:
+    def translate(
+        self, *, text: str, to_locale: str, model: str, custom_instructions: Optional[str] = None
+    ) -> str:
         url = self.base_url.rstrip("/") + "/chat/completions"
 
         system = (
@@ -25,6 +27,8 @@ class OpenAIChatCompletionsClient:
             "Do not alter those placeholders in any way. "
             "Output ONLY the translated content, with no extra commentary."
         )
+        if custom_instructions:
+            system += f"\n\nAdditional instructions:\n{custom_instructions}"
         user = f"Target locale: {to_locale}\n\nContent:\n{text}"
 
         payload: Dict[str, Any] = {
