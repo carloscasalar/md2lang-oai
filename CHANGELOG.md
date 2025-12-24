@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Custom translation instructions via `--instructions-file` option. Allows users to provide domain-specific translation guidance (e.g., D&D terminology, technical jargon) from a text or Markdown file.
+- Custom translation instructions via `--instructions-file` option. Allows users to provide domain-specific translation guidance (e.g., technical jargon) from a text or Markdown file.
 
 ## [1.0.0] - 2025-12-24
 
