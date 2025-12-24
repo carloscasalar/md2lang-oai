@@ -11,6 +11,6 @@
 
 ## Adventure Description
 
-You enter a dark cave. The smell of rotting flesh fills your nostrils. Make a WIS saving throw or become poisoned.
+You enter a dark cave. The smell of rotting flesh fills your nostrils. Make a WIS saving throw DC 13 or become poisoned.
 
 Once your eyes adjust to the darkness, you see Angry Knife, the goblin, who attacks you! Roll for initiative, using your DEX modifier.
