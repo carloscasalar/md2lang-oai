@@ -2,12 +2,12 @@
 
 Minimal CLI that translates Markdown/text into a target locale using an OpenAI-compatible **Chat Completions** HTTP endpoint.
 
-## Install / run (uv)
+## Quick start
 
 Run without installing:
 
 ```bash
-uv run md2lang-oai --help
+uvx md2lang-oai --help
 ```
 
 ## Usage
@@ -15,31 +15,31 @@ uv run md2lang-oai --help
 Translate from stdin to stdout:
 
 ```bash
-echo "Hello" | uv run md2lang-oai --to es-ES
+echo "Hello" | uvx md2lang-oai --to es-ES
 ```
 
 Translate a file:
 
 ```bash
-uv run md2lang-oai --to es-ES --input README.md
+uvx md2lang-oai --to es-ES --input README.md
 ```
 
 Write to a file:
 
 ```bash
-uv run md2lang-oai --to es-ES --input input.md --output output.md
+uvx md2lang-oai --to es-ES --input input.md --output output.md
 ```
 
 Pipe-friendly (stdin):
 
 ```bash
-cat input.md | uv run md2lang-oai --to es-ES > output.md
+cat input.md | uvx md2lang-oai --to es-ES > output.md
 ```
 
 Provide custom translation instructions:
 
 ```bash
-uv run md2lang-oai --to es-ES --input dnd_adventure.md --instructions-file dnd_instructions.txt
+uvx md2lang-oai --to es-ES --input dnd_adventure.md --instructions-file dnd_instructions.txt
 ```
 
 ## Configuration
@@ -56,7 +56,7 @@ Example:
 
 ```bash
 export OPENAI_API_KEY="..."
-uv run md2lang-oai --to es-ES --model gpt-4o-mini < input.md
+uvx md2lang-oai --to es-ES --model gpt-4o-mini < input.md
 ```
 
 ### Large files and context limits
@@ -67,7 +67,7 @@ Example for a local Ollama model with a 4K context:
 
 ```bash
 export OPENAI_API_KEY=test
-uv run md2lang-oai --to es-ES --model openchat:7b --base-url http://localhost:11434/v1 --max-tokens 2000 --timeout 600 --input large-file.md --output large-file-es.md
+uvx md2lang-oai --to es-ES --model openchat:7b --base-url http://localhost:11434/v1 --max-tokens 2000 --timeout 600 --input large-file.md --output large-file-es.md
 ```
 
 # Custom translation instructions
@@ -88,7 +88,7 @@ Regarding D&D acronyms, translate:
 Then use it:
 
 ```bash
-uv run md2lang-oai --to es-ES --input dnd_adventure.md --instructions-file dnd_instructions.txt
+uvx md2lang-oai --to es-ES --input dnd_adventure.md --instructions-file dnd_instructions.txt
 ```
 
 The instructions can be plain text or Markdown and will be appended to the system prompt sent to the model.
@@ -104,6 +104,14 @@ The tool preserves Markdown structure as much as possible:
 - Keeps link/image syntax intact; URLs are never translated.
 
 ## Development
+
+Install dependencies and create a virtual environment:
+
+```bash
+uv sync
+```
+
+This will create a `.venv` directory with all dependencies installed.
 
 Run tests:
 
