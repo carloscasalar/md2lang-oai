@@ -14,6 +14,6 @@ uv run md2lang-oai --to es-ES \
   --max-tokens 10000 \
   --timeout 600 \
   --input ./dnd_sample.md \
-  --instructions-file ./dnd_instructions.txt
+  --instructions-file ./dnd_instructions.txt \
   --output "$output"
 ```
